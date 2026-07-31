@@ -240,13 +240,21 @@
     gap:10px;
     margin-bottom:18px;
   }
-  .alias-list li{
+  .alias-list button{
+    font-family:inherit;
     font-size:13.5px;
     padding:7px 14px;
     background:#FFFDFB;
     border:1px solid var(--line);
     border-radius:20px;
     color:#4a4245;
+    cursor:pointer;
+    transition:border-color .25s, background .25s, transform .2s;
+  }
+  .alias-list button:hover, .alias-list button:focus-visible{
+    border-color:var(--gold);
+    background:#fff;
+    transform:translateY(-2px);
   }
   .alias-sub{ color:#948a8d; font-size:12px; }
   .official{
@@ -254,7 +262,87 @@
     font-size:13.5px;
     color:#5a5155;
   }
-  .official strong{ color:var(--wine-deep); }
+  .official button.alias-primary{
+    font-family:inherit;
+    background:none;
+    border:none;
+    border-bottom:1px dotted var(--gold);
+    color:var(--wine-deep);
+    font-weight:700;
+    font-size:14px;
+    padding:0 2px;
+    cursor:pointer;
+  }
+  .official button.alias-primary:hover, .official button.alias-primary:focus-visible{
+    color:var(--gold);
+  }
+
+  /* milestone banner */
+  .milestone{
+    text-align:center;
+    background:#FFFDFB;
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:18px 20px;
+    margin-bottom:46px;
+    opacity:0;
+    animation:fadeUp .8s ease forwards;
+  }
+  .milestone p{
+    font-family:'Aref Ruqaa', serif;
+    font-size:16px;
+    color:var(--wine-deep);
+    line-height:1.8;
+  }
+
+  /* gate secret */
+  .seal{ cursor:pointer; }
+  .gate-secret{
+    max-height:0;
+    opacity:0;
+    overflow:hidden;
+    font-size:12.5px;
+    line-height:1.9;
+    color:var(--wine-deep);
+    transition:opacity .5s ease, max-height .5s ease, margin-top .5s ease;
+  }
+  .gate-secret.revealed{
+    opacity:1;
+    max-height:70px;
+    margin-top:14px;
+  }
+
+  /* audio player */
+  .audio-player{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    margin-bottom:38px;
+    opacity:0;
+    animation:fadeUp .8s ease .34s forwards;
+  }
+  .note-btn{
+    flex-shrink:0;
+    width:52px; height:52px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:#FFFDFB;
+    color:var(--wine);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:border-color .25s, background .25s;
+  }
+  .note-btn:hover, .note-btn:focus-visible{ border-color:var(--gold); }
+  .note-btn.playing{ background:var(--bg-panel); }
+  .note-icon{ width:20px; height:20px; }
+  .note-btn.playing .note-icon{ animation:spin 3s linear infinite; }
+  @keyframes spin{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
+  .audio-meta{ line-height:1.6; }
+  .audio-title{ display:block; font-family:'Aref Ruqaa', serif; font-size:14.5px; color:var(--wine-deep); }
+  .audio-sub{ display:block; font-size:11.5px; color:#948a8d; margin-top:2px; }
 
   /* collection grid */
   .collection{ margin-bottom:60px; }
@@ -330,6 +418,8 @@
   .fx-spark{ width:5px; height:5px; background:var(--gold); transform:rotate(45deg); }
   .fx-choco{ width:9px; height:9px; background:#6B4226; border-radius:2px; }
   .fx-berry{ width:8px; height:8px; background:#C6273B; border-radius:50% 50% 50% 0; }
+  .fx-ice{ width:9px; height:9px; background:rgba(184,214,227,0.85); border:1px solid rgba(255,255,255,0.7); border-radius:2px; }
+  .fx-apricot{ width:8px; height:8px; background:var(--apricot); border-radius:50%; }
 
   @keyframes fall{
     from{ transform:translateY(0) rotate(0deg); opacity:1; }
@@ -377,6 +467,15 @@
   }
   .back-btn:hover, .back-btn:focus-visible{ border-color:var(--gold); background:var(--bg-panel); }
   .back-btn svg{ width:13px; height:13px; }
+
+  .detail-icon{
+    width:38px; height:38px;
+    color:var(--wine);
+    margin:0 auto 14px;
+    opacity:0;
+    animation:fadeUp .7s ease .02s forwards;
+  }
+  .detail-icon svg{ width:100%; height:100%; }
 
   .detail-num{
     font-family:'Cormorant Garamond', serif;
@@ -486,6 +585,7 @@
     <p class="eyebrow">دعوة خاصة</p>
     <h1 class="gate-title">قبل الدخول</h1>
     <p class="gate-text">هذه الصفحة مُعدّة لشخص واحد فقط.<br>للمتابعة، يُرجى إدخال الاسم.</p>
+    <p class="gate-secret" id="gateSecret">سبب دخولك لهذا الموقع هو لأن انتِ حبيبتي ولوشتي</p>
     <form class="gate-form" id="gateForm" autocomplete="off">
       <input type="text" id="nameInput" placeholder="الاسم" aria-label="الاسم">
       <button type="submit">دخول</button>
@@ -502,16 +602,20 @@
   </header>
 
   <section class="aliases">
-    <p class="section-label">تُعرف أيضاً بـ</p>
+    <p class="section-label">تُعرف أيضاً بـ — اضغطي على أي اسم</p>
     <ul class="alias-list">
-      <li>بسبوسة</li>
-      <li>ريييمة <span class="alias-sub">(رييمو / رييوم)</span></li>
-      <li>Miss Bunny</li>
-      <li>من السما</li>
-      <li>كندر</li>
+      <li><button type="button" class="alias-btn" data-target="detail-name-basbousa">بسبوسة</button></li>
+      <li><button type="button" class="alias-btn" data-target="detail-name-reema">ريييمة <span class="alias-sub">(رييمو / رييوم)</span></button></li>
+      <li><button type="button" class="alias-btn" data-target="detail-name-bunny">Miss Bunny</button></li>
+      <li><button type="button" class="alias-btn" data-target="detail-name-sama">من السما</button></li>
+      <li><button type="button" class="alias-btn" data-target="detail-name-kinder-cherry">كندر</button></li>
     </ul>
-    <p class="official">الاسم المعتمد: <strong>لمى</strong></p>
+    <p class="official">الاسم المعتمد: <button type="button" class="alias-primary" data-target="detail-name-lama">لمى</button></p>
   </section>
+
+  <div class="milestone" id="milestone" hidden>
+    <p>🌷 اكتشفتِ المجموعة كاملة — وهذا يليق بيكِ تماماً.</p>
+  </div>
 
   <section class="collection">
     <p class="section-label">عناصر المجموعة</p>
@@ -604,6 +708,34 @@
           </svg>
         </span>
         <span class="card-label">الفراولة</span>
+        <span class="fx-layer"></span>
+      </button>
+
+      <button class="card" data-fx="ice" aria-label="Ice Coffee">
+        <span class="card-num">07</span>
+        <span class="card-icon">
+          <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3">
+            <path d="M12 14h16l-2 18a2 2 0 0 1-2 2H16a2 2 0 0 1-2-2Z"/>
+            <line x1="10" y1="14" x2="30" y2="14"/>
+            <line x1="24" y1="7" x2="27" y2="14"/>
+            <line x1="16" y1="20" x2="20" y2="24"/>
+            <line x1="20" y1="20" x2="16" y2="24"/>
+          </svg>
+        </span>
+        <span class="card-label"><span class="latin">Ice Coffee</span></span>
+        <span class="fx-layer"></span>
+      </button>
+
+      <button class="card" data-fx="apricot" aria-label="المشمش">
+        <span class="card-num">08</span>
+        <span class="card-icon">
+          <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3">
+            <circle cx="20" cy="21" r="10"/>
+            <path d="M20 11c1.5 3 1.5 7 0 10"/>
+            <line x1="21" y1="10" x2="23" y2="7"/>
+          </svg>
+        </span>
+        <span class="card-label">المشمش</span>
         <span class="fx-layer"></span>
       </button>
 
@@ -724,6 +856,159 @@
       </div>
     </section>
 
+    <section class="detail" id="detail-icecoffee" data-ambient="ice">
+      <div class="ambient-layer"></div>
+      <button class="back-btn" type="button" data-back>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 6l-6 6 6 6"/></svg>
+        رجوع
+      </button>
+      <span class="detail-num">07</span>
+      <h2 class="detail-title"><span class="latin">Ice Coffee</span></h2>
+      <p class="detail-text">My love for this type of coffee stems from my love for you; your coolness, your beauty, and your kindness are depicted in iced coffee. 👸🏻🫀</p>
+      <div class="detail-gallery single">
+        <img class="detail-img" src="icecoffee.jpg" alt="Ice Coffee" loading="lazy">
+      </div>
+      <div class="signature">
+        <p>الشمس التي تفتح الورود وتجعلها تفتح هي انتي بذاتها شمس مقابل ورد<br>فأنتِ اجمل شمس وتفتح وردها بنفسها، جمالك داخلي ويفتح خارجياً بشمسك يا مشمش</p>
+      </div>
+    </section>
+
+    <section class="detail" id="detail-apricot" data-ambient="apricot">
+      <div class="ambient-layer"></div>
+      <button class="back-btn" type="button" data-back>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 6l-6 6 6 6"/></svg>
+        رجوع
+      </button>
+      <span class="detail-num">08</span>
+      <h2 class="detail-title">المشمش</h2>
+      <p class="detail-text">سبب حبك لهذا اللون لأن فيه دفء مشابه لكِ، وليس بدفئج الذي يجعل الكل متيّمين بروحج الجميلة ☀️🌠</p>
+      <div class="detail-gallery single">
+        <img class="detail-img" src="apricot.jpg" alt="المشمش" loading="lazy">
+      </div>
+      <div class="signature">
+        <p>الشمس التي تفتح الورود وتجعلها تفتح هي انتي بذاتها شمس مقابل ورد<br>فأنتِ اجمل شمس وتفتح وردها بنفسها، جمالك داخلي ويفتح خارجياً بشمسك يا مشمش</p>
+      </div>
+    </section>
+
+    <section class="detail" id="detail-name-basbousa">
+      <button class="back-btn" type="button" data-back>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 6l-6 6 6 6"/></svg>
+        رجوع
+      </button>
+      <p class="eyebrow">اسم خاص</p>
+      <h2 class="detail-title">بسبوسة</h2>
+      <p class="detail-text">حلاتج مثل حلاة البسبوسة، واحلىىىى بهواي يا اجمل حلوة<br>صوتج وعيونج وجمال روحج احلى من احلى بسبوسة، يا بسبوستي 🌠👸🏻🫀</p>
+      <div class="audio-player">
+        <button type="button" class="note-btn" data-audio="audio-basbousa" aria-label="تشغيل المقطع">
+          <svg class="note-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3" fill="currentColor" stroke="none"/><circle cx="18" cy="16" r="3" fill="currentColor" stroke="none"/></svg>
+        </button>
+        <span class="audio-meta">
+          <span class="audio-title">ملك أنا لو تصبحين حبيبتي</span>
+          <span class="audio-sub">كاظم الساهر</span>
+        </span>
+        <audio id="audio-basbousa" src="song-basbousa.mp3" preload="none"></audio>
+      </div>
+      <div class="signature">
+        <p>الشمس التي تفتح الورود وتجعلها تفتح هي انتي بذاتها شمس مقابل ورد<br>فأنتِ اجمل شمس وتفتح وردها بنفسها، جمالك داخلي ويفتح خارجياً بشمسك يا مشمش</p>
+      </div>
+    </section>
+
+    <section class="detail" id="detail-name-reema">
+      <button class="back-btn" type="button" data-back>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 6l-6 6 6 6"/></svg>
+        رجوع
+      </button>
+      <p class="eyebrow">اسم خاص</p>
+      <span class="detail-icon">
+        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M14 24c0-5 3-9 6-9s6 4 6 9"/>
+          <path d="M17 15c-1-2-1-4 0-6M23 15c1-2 1-4 0-6"/>
+          <line x1="16" y1="24" x2="15" y2="32"/>
+          <line x1="19" y1="24" x2="18" y2="32"/>
+          <line x1="22" y1="24" x2="23" y2="32"/>
+          <line x1="25" y1="24" x2="26" y2="32"/>
+        </svg>
+      </span>
+      <h2 class="detail-title">ريييمة</h2>
+      <p class="detail-text">رشاقتج مثل رشاقة الغزال يا اجمل غزالة<br>انتي ريييوم واحلى رييمة، حتى الريم ما عندها عيونج يا حلوة 🦌🫀</p>
+      <div class="signature">
+        <p>الشمس التي تفتح الورود وتجعلها تفتح هي انتي بذاتها شمس مقابل ورد<br>فأنتِ اجمل شمس وتفتح وردها بنفسها، جمالك داخلي ويفتح خارجياً بشمسك يا مشمش</p>
+      </div>
+    </section>
+
+    <section class="detail" id="detail-name-bunny">
+      <button class="back-btn" type="button" data-back>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 6l-6 6 6 6"/></svg>
+        رجوع
+      </button>
+      <p class="eyebrow">اسم خاص</p>
+      <h2 class="detail-title"><span class="latin">Miss Bunny</span></h2>
+      <p class="detail-text">أرنوبتي جميلة، وأحلى من أرنوبة ديزني وأرنوبة الواقع، لذلك اسمها <span class="latin">Miss Bunny</span> 🫀🌸</p>
+      <div class="detail-gallery">
+        <img class="detail-img" src="bunny-1.jpg" alt="Miss Bunny" loading="lazy">
+        <img class="detail-img" src="bunny-2.jpg" alt="Miss Bunny" loading="lazy">
+      </div>
+      <div class="signature">
+        <p>الشمس التي تفتح الورود وتجعلها تفتح هي انتي بذاتها شمس مقابل ورد<br>فأنتِ اجمل شمس وتفتح وردها بنفسها، جمالك داخلي ويفتح خارجياً بشمسك يا مشمش</p>
+      </div>
+    </section>
+
+    <section class="detail" id="detail-name-sama">
+      <button class="back-btn" type="button" data-back>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 6l-6 6 6 6"/></svg>
+        رجوع
+      </button>
+      <p class="eyebrow">اسم خاص</p>
+      <h2 class="detail-title">من السما</h2>
+      <p class="detail-text">انتي أفضل هبة من الله، كأنما سقطتِ من السماء، ولذلك الاسم لائق بيكِ، فأنتِ النجم والقمر الذي يضيء حياتي 🌠🌌👸🏻</p>
+      <div class="detail-gallery">
+        <img class="detail-img" src="moon.jpg" alt="من السما" loading="lazy">
+        <img class="detail-img" src="star-girl.jpg" alt="من السما" loading="lazy">
+      </div>
+      <div class="signature">
+        <p>الشمس التي تفتح الورود وتجعلها تفتح هي انتي بذاتها شمس مقابل ورد<br>فأنتِ اجمل شمس وتفتح وردها بنفسها، جمالك داخلي ويفتح خارجياً بشمسك يا مشمش</p>
+      </div>
+    </section>
+
+    <section class="detail" id="detail-name-lama">
+      <button class="back-btn" type="button" data-back>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 6l-6 6 6 6"/></svg>
+        رجوع
+      </button>
+      <p class="eyebrow">اسم خاص</p>
+      <h2 class="detail-title">لمى</h2>
+      <p class="detail-text">انتي أفضل مداوي للجروح، نوتة واحدة من صوتج تشفي كل الآلام. يمكن تشوفيني لزكة تداوي جروح، بس انتي مفعولج أقووووى. أحب اسمج بكل تفاصيله 🌸🫠🫀</p>
+      <div class="audio-player">
+        <button type="button" class="note-btn" data-audio="audio-lama" aria-label="تشغيل المقطع">
+          <svg class="note-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3" fill="currentColor" stroke="none"/><circle cx="18" cy="16" r="3" fill="currentColor" stroke="none"/></svg>
+        </button>
+        <span class="audio-meta">
+          <span class="audio-title">قولي لي كيف سأنقذ نفسي</span>
+          <span class="audio-sub">كاظم الساهر</span>
+        </span>
+        <audio id="audio-lama" src="song-lama.mp3" preload="none"></audio>
+      </div>
+      <div class="signature">
+        <p>الشمس التي تفتح الورود وتجعلها تفتح هي انتي بذاتها شمس مقابل ورد<br>فأنتِ اجمل شمس وتفتح وردها بنفسها، جمالك داخلي ويفتح خارجياً بشمسك يا مشمش</p>
+      </div>
+    </section>
+
+    <section class="detail" id="detail-name-kinder-cherry">
+      <button class="back-btn" type="button" data-back>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 6l-6 6 6 6"/></svg>
+        رجوع
+      </button>
+      <p class="eyebrow">اسم خاص</p>
+      <h2 class="detail-title">كندر</h2>
+      <p class="detail-text latin" style="font-size:15px; line-height:1.9;">I thought you were a cherry that escaped from a paradise garden to carry out my execution. 🫀🫠🍒</p>
+      <div class="detail-gallery single">
+        <img class="detail-img" src="cherries.jpg" alt="كندر" loading="lazy">
+      </div>
+      <div class="signature">
+        <p>الشمس التي تفتح الورود وتجعلها تفتح هي انتي بذاتها شمس مقابل ورد<br>فأنتِ اجمل شمس وتفتح وردها بنفسها، جمالك داخلي ويفتح خارجياً بشمسك يا مشمش</p>
+      </div>
+    </section>
+
   </div>
 </main>
 
@@ -761,6 +1046,11 @@
   const input = document.getElementById('nameInput');
   const error = document.getElementById('gateError');
   const seal = document.getElementById('seal');
+  const gateSecret = document.getElementById('gateSecret');
+
+  seal.addEventListener('dblclick', function(){
+    gateSecret.classList.add('revealed');
+  });
 
   form.addEventListener('submit', function(e){
     e.preventDefault();
@@ -789,6 +1079,8 @@
     'spark':      { cls:'fx-spark',      count:9  },
     'choco':      { cls:'fx-choco',      count:8  },
     'berry':      { cls:'fx-berry',      count:8  },
+    'ice':        { cls:'fx-ice',        count:9  },
+    'apricot':    { cls:'fx-apricot',    count:8  },
   };
 
   const detailMap = {
@@ -798,7 +1090,15 @@
     'paw':        'detail-catwoman',
     'choco':      'detail-kinder',
     'berry':      'detail-strawberry',
+    'ice':        'detail-icecoffee',
+    'apricot':    'detail-apricot',
   };
+
+  // the 8 "things she loves" cards — used to detect a completed collection
+  const collectionDetailIds = ['detail-pink','detail-red','detail-perfume','detail-catwoman','detail-kinder','detail-strawberry','detail-icecoffee','detail-apricot'];
+  const viewedCollection = new Set();
+  let milestoneShown = false;
+  const milestoneEl = document.getElementById('milestone');
 
   function spawnPaws(layer, count){
     count = count || 5;
@@ -872,11 +1172,16 @@
   }
 
   function replayEntrance(section){
-    section.querySelectorAll('.detail-title, .detail-text, .detail-gallery, .signature').forEach(el=>{
+    section.querySelectorAll('.detail-title, .detail-text, .detail-gallery, .signature, .audio-player, .detail-icon').forEach(el=>{
       el.style.animation = 'none';
       void el.offsetWidth;
       el.style.animation = '';
     });
+  }
+
+  function stopAllAudio(){
+    document.querySelectorAll('audio').forEach(a => { a.pause(); a.currentTime = 0; });
+    document.querySelectorAll('.note-btn').forEach(b => b.classList.remove('playing'));
   }
 
   function openDetail(id){
@@ -889,17 +1194,46 @@
     replayEntrance(target);
     window.scrollTo({ top:0, behavior: reduceMotion ? 'auto' : 'smooth' });
     startAmbient(target.dataset.ambient, target.querySelector('.ambient-layer'));
+    if(collectionDetailIds.includes(id)) viewedCollection.add(id);
   }
 
   function closeDetail(){
     stopAmbient();
+    stopAllAudio();
     detailSections.forEach(d => d.classList.remove('active'));
     homeView.style.display = '';
     window.scrollTo({ top:0, behavior: reduceMotion ? 'auto' : 'smooth' });
+    if(!milestoneShown && viewedCollection.size >= collectionDetailIds.length){
+      milestoneShown = true;
+      milestoneEl.hidden = false;
+      milestoneEl.style.animation = 'none';
+      void milestoneEl.offsetWidth;
+      milestoneEl.style.animation = '';
+    }
   }
 
   document.querySelectorAll('[data-back]').forEach(btn=>{
     btn.addEventListener('click', closeDetail);
+  });
+
+  // clickable name badges (aliases) — open their own detail page directly
+  document.querySelectorAll('.alias-list button, .official button.alias-primary').forEach(btn=>{
+    btn.addEventListener('click', ()=> openDetail(btn.dataset.target));
+  });
+
+  // audio players — rotating note button, only one track plays at a time
+  document.querySelectorAll('.note-btn').forEach(btn=>{
+    const audio = document.getElementById(btn.dataset.audio);
+    if(!audio) return;
+    btn.addEventListener('click', ()=>{
+      const isPlaying = !audio.paused;
+      stopAllAudio();
+      if(!isPlaying){
+        audio.play();
+        btn.classList.add('playing');
+      }
+    });
+    audio.addEventListener('ended', ()=> btn.classList.remove('playing'));
   });
 </script>
 </body>
